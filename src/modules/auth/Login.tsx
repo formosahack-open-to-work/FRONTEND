@@ -1,7 +1,6 @@
 import type React from "react";
 
 import { useState } from "react";
-import Link from "next/link";
 
 import {
   AuthService,
@@ -31,6 +30,7 @@ export default function Login() {
 
     try {
       await AuthService.login(form);
+      window.location.href = "/dashboard";
       // TODO: redirigir a Home o Profile
     } catch (err) {
       if (isApiValidationError(err) && err.errors?.length) {
@@ -109,15 +109,7 @@ export default function Login() {
           >
             {loading ? "Ingresando..." : "Entrar"}
           </button>
-          <p className="text-center text-sm text-gray-600 mt-4">
-            ¿No tienes cuenta?{" "}
-            <Link
-              href="/register"
-              className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
-            >
-              Regístrate
-            </Link>
-          </p>
+          
         </form>
       </div>
     </div>

@@ -6,9 +6,9 @@ import type {
   ApiErrorPayload,
 } from "../../types/auth";
 import type { IUser } from "../../types/user";
-import { saveToken } from "../../common/storage";
+import { clearToken, saveToken } from "../../common/storage";
 
-const AUTH_PREFIX = "/auth";
+
 
 export function isApiValidationError(e: unknown): e is ApiErrorPayload {
   return (
@@ -21,7 +21,7 @@ export function isApiValidationError(e: unknown): e is ApiErrorPayload {
 export const AuthService = {
   async register(payload: RegisterDTO): Promise<AuthResponse> {
     const { data } = await http.post<AuthResponse>(
-      `${AUTH_PREFIX}/register`,
+      `/register`,
       payload
     );
     saveToken(data.token);
@@ -30,7 +30,7 @@ export const AuthService = {
 
   async firstUser(payload: RegisterDTO): Promise<AuthResponse> {
     const { data } = await http.post<AuthResponse>(
-      `${AUTH_PREFIX}/first-user`,
+      `/first-user`,
       payload
     );
     saveToken(data.token);
@@ -39,7 +39,7 @@ export const AuthService = {
 
   async login(payload: LoginDTO): Promise<AuthResponse> {
     const { data } = await http.post<AuthResponse>(
-      `${AUTH_PREFIX}/login`,
+      `/login`,
       payload
     );
     saveToken(data.token);
@@ -47,7 +47,11 @@ export const AuthService = {
   },
 
   async profile(): Promise<IUser> {
-    const { data } = await http.get<IUser>(`${AUTH_PREFIX}/profile`);
+    const { data } = await http.get<IUser>(`/profile`);
     return data;
+  },
+
+  async logout(): Promise<void> {
+    clearToken();
   },
 };
