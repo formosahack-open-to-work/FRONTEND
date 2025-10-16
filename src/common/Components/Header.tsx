@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext"; 
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 interface NavItem {
   name: string;
@@ -8,14 +8,15 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { name: "Inicio", href: "/" },
-  { name: "Foro", href: "/foro" },
+  { name: "Foro", href: "/forum" },
   { name: "Explorar", href: "/explorar" },
 ];
 
 export default function Header() {
   const { user, logout } = useAuth(); // obtenemos el usuario real
 
-  {console.log(user)}
+  console.log(user);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -36,14 +37,12 @@ export default function Header() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          
           {/* LOGO */}
           <div className="flex-shrink-0">
             <a
               href="/"
               className="flex items-center space-x-2 hover:scale-[1.02] transition-transform"
             >
-              
               <span className="text-2xl font-extrabold text-gray-900">
                 <span className="text-primary-600">Formo</span>Foro
               </span>
@@ -82,8 +81,6 @@ export default function Header() {
               </>
             ) : (
               <>
-                
-
                 {/* PERFIL */}
                 <div className="relative group">
                   <button className="flex items-center space-x-2 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
@@ -199,7 +196,7 @@ export default function Header() {
               onClick={handleLogout}
               className="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md mt-2"
             >
-              Cerrar Sesión ({user.name|| "Usuario"})
+              Cerrar Sesión ({user.name || "Usuario"})
             </button>
           )}
         </div>

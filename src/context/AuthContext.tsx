@@ -46,13 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "auth:token") window.location.reload(); // o volver a hidratar perfil
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  // useEffect(() => {
+  //   const onStorage = (e: StorageEvent) => {
+  //     if (e.key === "auth:token") window.location.reload(); // o volver a hidratar perfil
+  //   };
+  //   window.addEventListener("storage", onStorage);
+  //   return () => window.removeEventListener("storage", onStorage);
+  // }, []);
 
   const handleAuthCall = async <T extends RegisterDTO | LoginDTO>(
     fn: (p: T) => Promise<{ token: string; user: IUser }>,
@@ -63,6 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fn(payload);
       setUser(res.user);
+      // si el back no devuelve user completo, refresca
+      if (!res.user?._id) {
+        const profile = await AuthService.profile();
+        setUser(profile);
+      }
     } catch (e) {
       if (isApiValidationError(e)) {
         // junta mensajes de express-validator o message general

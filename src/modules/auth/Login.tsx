@@ -30,7 +30,6 @@ export default function Login() {
 
     try {
       await AuthService.login(form);
-      window.location.href = "/dashboard";
       // TODO: redirigir a Home o Profile
       window.location.href = "/dashboard";
     } catch (err) {
