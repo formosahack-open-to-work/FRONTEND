@@ -1,11 +1,10 @@
 import axios from "axios";
 import { getToken } from "../common/storage";
 
-const baseURL = import.meta.env.VITE_API_BASE ?? "http://localhost:3402/api";
+const baseURL = import.meta.env.VITE_API_BASE ?? "http://localhost:4000";
 
 export const http = axios.create({
   baseURL,
-  withCredentials: true, // por si el back setea cookies
 });
 
 // Agregar Authorization si hay token guardado

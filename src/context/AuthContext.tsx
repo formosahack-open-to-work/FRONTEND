@@ -46,6 +46,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "auth:token") window.location.reload(); // o volver a hidratar perfil
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const handleAuthCall = async <T extends RegisterDTO | LoginDTO>(
     fn: (p: T) => Promise<{ token: string; user: IUser }>,
     payload: T

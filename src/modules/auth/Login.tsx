@@ -1,7 +1,6 @@
 import type React from "react";
 
 import { useState } from "react";
-import Link from "next/link";
 
 import {
   AuthService,
@@ -32,6 +31,7 @@ export default function Login() {
     try {
       await AuthService.login(form);
       // TODO: redirigir a Home o Profile
+      window.location.href = "/dashboard";
     } catch (err) {
       if (isApiValidationError(err) && err.errors?.length) {
         const map: FieldErrorMap = {};
@@ -111,12 +111,12 @@ export default function Login() {
           </button>
           <p className="text-center text-sm text-gray-600 mt-4">
             ¿No tienes cuenta?{" "}
-            <Link
+            <a
               href="/register"
-              className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+              className="text-primary font-semibold hover:text-secondary transition-colors"
             >
               Regístrate
-            </Link>
+            </a>
           </p>
         </form>
       </div>

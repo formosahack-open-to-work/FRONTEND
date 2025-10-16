@@ -12,8 +12,10 @@ type FieldErrorMap = Partial<Record<keyof RegisterDTO, string>>;
 export default function Register() {
   const [form, setForm] = useState<RegisterDTO>({
     name: "",
+    username: "",
     email: "",
     password: "",
+    condition: "",
   });
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrorMap>({});
@@ -32,8 +34,12 @@ export default function Register() {
     setGlobalError("");
 
     try {
+      console.log(form);
+
       await AuthService.register(form);
+
       // TODO: redirigir a Home o Profile
+      window.location.href = "/";
     } catch (err) {
       if (isApiValidationError(err) && err.errors?.length) {
         const map: FieldErrorMap = {};
@@ -87,6 +93,25 @@ export default function Register() {
 
           <div>
             <label className="block mb-2 text-sm font-semibold text-gray-700">
+              Nombre de usuario
+            </label>
+            <input
+              name="username"
+              type="text"
+              required
+              value={form.username}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+            {fieldErrors.username && (
+              <p className="mt-1.5 text-xs text-red-600 font-medium">
+                {fieldErrors.username}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block mb-2 text-sm font-semibold text-gray-700">
               Email
             </label>
             <input
@@ -100,6 +125,25 @@ export default function Register() {
             {fieldErrors.email && (
               <p className="mt-1.5 text-xs text-red-600 font-medium">
                 {fieldErrors.email}
+              </p>
+            )}
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-semibold text-gray-700">
+              Condición o padecimiento
+            </label>
+            <input
+              name="condition"
+              type="text"
+              required
+              value={form.condition}
+              onChange={handleChange}
+              placeholder="Ej: Diabetes tipo 2, Hipertensión, etc."
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+            {fieldErrors.condition && (
+              <p className="mt-1.5 text-xs text-red-600 font-medium">
+                {fieldErrors.condition}
               </p>
             )}
           </div>
@@ -131,6 +175,15 @@ export default function Register() {
           >
             {loading ? "Creando..." : "Registrarme"}
           </button>
+          <p className="text-center text-sm text-gray-600 mt-4">
+            ¿Ya tenés cuenta?{" "}
+            <a
+              href="/login"
+              className="text-primary font-semibold hover:text-secondary transition-colors"
+            >
+              Ingresar
+            </a>
+          </p>
         </form>
       </div>
     </div>

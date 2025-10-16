@@ -2,7 +2,9 @@ import type { IUser } from "./user";
 
 export interface RegisterDTO {
   name: string;
+  username: string;
   email: string;
+  condition: string;
   password: string;
 }
 
