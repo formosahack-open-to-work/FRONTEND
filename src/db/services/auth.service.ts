@@ -6,7 +6,7 @@ import type {
   ApiErrorPayload,
 } from "../../types/auth";
 import type { IUser } from "../../types/user";
-import { saveToken } from "../../common/storage";
+import { clearToken, saveToken } from "../../common/storage";
 
 export function isApiValidationError(e: unknown): e is ApiErrorPayload {
   return (
@@ -38,5 +38,9 @@ export const AuthService = {
   async profile(): Promise<IUser> {
     const { data } = await http.get<IUser>(`/profile`);
     return data;
+  },
+
+  async logout(): Promise<void> {
+    clearToken();
   },
 };
