@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext"; 
-import Logo from '../../assets/images/Logo.png';
+import { useAuth } from "../../context/AuthContext";
+import Logo from "../../assets/images/Logo.png";
 
 interface NavItem {
   name: string;
@@ -8,20 +8,40 @@ interface NavItem {
   adminOnly?: boolean;
 }
 
-// Definir todas las rutas privadas
+
 const privateNavItems: NavItem[] = [
   { name: "Foro", href: "/forum" },
   { name: "Consejos", href: "/explorer" },
   { name: "SerenAI", href: "/chat" },
-  { name: "Dashboard", href: "/dashboard", adminOnly: true },
 ];
 
 export default function Header() {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
+
+  
+  useEffect(() => {
+   
+    if (user !== null) { 
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
+
+  
+  useEffect(() => {
+   
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Cerrar dropdown cuando se hace clic fuera
   useEffect(() => {
@@ -31,9 +51,9 @@ export default function Header() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -42,14 +62,12 @@ export default function Header() {
 
   const handleDropdownMouseEnter = () => {
     setIsDropdownOpen(true);
-    // Limpiar timeout cuando el mouse entra
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
   };
 
   const handleDropdownMouseLeave = () => {
-    // Esperar 600ms antes de cerrar (tiempo suficiente para mover el mouse)
     timeoutRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
     }, 600);
@@ -57,7 +75,6 @@ export default function Header() {
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
-    // Limpiar cualquier timeout pendiente al hacer clic
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -65,7 +82,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      logout();
+      await logout();
       setIsOpen(false);
       setIsDropdownOpen(false);
     } catch (error) {
@@ -76,20 +93,75 @@ export default function Header() {
   // Filtrar nav items basado en el rol del usuario
   const getNavItems = () => {
     if (!user) return [];
-    
-    return privateNavItems.filter(item => {
-      // Si no es solo para admin, mostrar a todos los usuarios autenticados
+
+    return privateNavItems.filter((item) => {
       if (!item.adminOnly) return true;
-      // Si es solo para admin, verificar si el usuario es admin
-      return user.role === 'admin'; // Ajusta según tu estructura de usuario
+      return user.data.role === "admin";
     });
   };
 
-  // Solo mostrar nav items si hay usuario
+  
   const finalNavItems = user ? getNavItems() : [];
 
+ 
+  if (isLoading) {
+    return (
+      <header className="bg-white shadow-md sticky top-0 z-50 py-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* LOGO */}
+            <div className="flex-shrink-0">
+              <a
+                href="/"
+                className="flex items-center space-x-2"
+              >
+                <span className="text-2xl font-extrabold text-gray-900">
+                  <span className="text-primary-600">Serena</span>
+                </span>
+              </a>
+            </div>
+
+            {/* Espacio para los botones (ocupando el mismo espacio) */}
+            <div className="hidden md:flex items-center space-x-4 opacity-0">
+              {/* Botones invisibles que mantienen el espacio */}
+              <div className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl">
+                Iniciar Sesión
+              </div>
+              <div className="px-4 py-2 text-sm font-medium text-primary-600 border border-primary-600 rounded-xl">
+                Registrarse
+              </div>
+            </div>
+
+            {/* Botón hamburguesa para móvil */}
+            <div className="md:hidden flex items-center">
+              <button
+                type="button"
+                className="p-2 rounded-md text-gray-500"
+                disabled
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 py-2 ">
+    <header className="bg-white shadow-md sticky top-0 z-50 py-2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* LOGO */}
@@ -139,7 +211,7 @@ export default function Header() {
             ) : (
               <>
                 {/* PERFIL CON DROPDOWN MEJORADO */}
-                <div 
+                <div
                   className="relative"
                   ref={dropdownRef}
                   onMouseEnter={handleDropdownMouseEnter}
@@ -149,14 +221,13 @@ export default function Header() {
                     onClick={handleDropdownClick}
                     className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
                   >
-                    {/* AVATAR DEL USUARIO CORREGIDO */}
+                    {/* AVATAR DEL USUARIO */}
                     <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-300">
-                      <img 
-                        src={ Logo} 
+                      <img
+                        src={Logo}
                         alt="Avatar"
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          // Fallback si la imagen no carga
                           e.target.src = Logo;
                         }}
                       />
@@ -164,22 +235,29 @@ export default function Header() {
                     <span className="text-sm font-medium text-gray-700">
                       {user.data.name}
                     </span>
-                    <svg 
-                      className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                      fill="none" 
-                      stroke="currentColor" 
+                    <svg
+                      className={`w-4 h-4 text-gray-500 transition-transform ${
+                        isDropdownOpen ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
 
                   {/* Dropdown con transición mejorada */}
-                  <div 
+                  <div
                     className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 transform ${
-                      isDropdownOpen 
-                        ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' 
-                        : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                      isDropdownOpen
+                        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
                     }`}
                   >
                     <div className="px-4 py-3 border-b border-gray-100">
@@ -205,7 +283,7 @@ export default function Header() {
             )}
           </div>
 
-          {/* MENÚ MÓVIL - Siempre visible para el botón hamburguesa */}
+          {/* MENÚ MÓVIL */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -249,7 +327,6 @@ export default function Header() {
       {/* MENÚ MÓVIL RESPONSIVO */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-3 space-y-2">
-          {/* Solo mostrar items de navegación si hay usuario */}
           {finalNavItems.map((item) => (
             <a
               key={item.name}
@@ -280,10 +357,11 @@ export default function Header() {
             </>
           ) : (
             <>
-              {/* Información del usuario en móvil */}
               <div className="px-3 py-2 border-t border-gray-200 mt-2">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {user.data.name}
+                </p>
+                <p className="text-xs text-gray-500">{user.data.email}</p>
               </div>
               <a
                 href="/p"
