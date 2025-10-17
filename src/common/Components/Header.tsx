@@ -116,7 +116,7 @@ export default function Header() {
                   {item.name}
                 </a>
               ))}
-            </nav>
+            </nav>   
           )}
 
           {/* BOTONES ACCIÓN Desktop */}
@@ -162,7 +162,7 @@ export default function Header() {
                       />
                     </div>
                     <span className="text-sm font-medium text-gray-700">
-                      {user.name || 'Usuario'}
+                      {user.data.name}
                     </span>
                     <svg 
                       className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
@@ -183,8 +183,8 @@ export default function Header() {
                     }`}
                   >
                     <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      <p className="text-sm font-medium text-gray-900 truncate">{user.data.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.data.email}</p>
                     </div>
                     <a
                       href="/profile"

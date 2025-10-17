@@ -10,8 +10,7 @@ type Message = {
 
 const Chat: React.FC = () => {
   const token = localStorage.getItem("token");
-  console.log(token); // Mover fuera del JSX
-  
+
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -24,16 +23,36 @@ const Chat: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const isFirstRender = useRef(true); // ✅ bandera para evitar scroll inicial
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const hasLoaded = useRef(false);
 
+  // 🔹 Solo hacer scroll al inicio si es necesario
   useEffect(() => {
-    if (isFirstRender.current) {
-      // En el primer render, no hace scroll
-      isFirstRender.current = false;
+    if (!hasLoaded.current) {
+      hasLoaded.current = true;
       return;
     }
-    // Luego sí, cuando hay nuevos mensajes
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  // 🔹 Scroll automático SOLO cuando el usuario ya está cerca del final
+  useEffect(() => {
+    if (!chatContainerRef.current) return;
+
+    const container = chatContainerRef.current;
+    const isNearBottom = 
+      container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+
+    // Solo hacer scroll si el usuario está cerca del final o está enviando un mensaje
+    if (isNearBottom) {
+      const timeout = setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ 
+          behavior: "smooth",
+          block: "nearest"
+        });
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,22 +75,20 @@ const Chat: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          message: input.trim()
-        }),
+        body: JSON.stringify({ message: input.trim() }),
       });
 
       if (!response.ok) throw new Error("Error en la respuesta del servidor");
 
       const data = await response.json();
 
-      console.log(response);
-      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.success ? data.data : data.message || "Lo siento, no pude procesar tu mensaje.",
+        text: data.success
+          ? data.data
+          : data.message || "Lo siento, no pude procesar tu mensaje.",
         sender: "bot",
         timestamp: new Date(),
       };
@@ -99,8 +116,8 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* Header minimalista */}
+    <div className="flex h-screen flex-col bg-white">
+      {/* Header */}
       <div className="bg-[#141A45] text-white p-4 m-0 flex items-center gap-3 rounded-t-2xl">
         <div className="bg-white/20 p-2 rounded-full">
           <FiMessageCircle className="text-xl" />
@@ -111,8 +128,11 @@ const Chat: React.FC = () => {
         </div>
       </div>
 
-      {/* Área de chat */}
-      <div className="flex-1 overflow-y-auto p-5 bg-gray-50">
+      {/* Chat - Agregar ref aquí */}
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-5 bg-gray-50"
+      >
         <div className="max-w-3xl mx-auto space-y-5">
           {messages.map((msg) => (
             <div
@@ -125,13 +145,14 @@ const Chat: React.FC = () => {
                 className={`max-w-[85%] rounded-2xl px-5 py-4 text-base leading-relaxed ${
                   msg.sender === "user"
                     ? "bg-[#141A45] text-white rounded-tr-none"
-                    : "bg-white text-gray-800 border border-gray-200 rounded-tl-none shadow-sm"
+                    : "bg-white text-gray-800 border border-primary rounded-tl-none shadow-sm"
                 }`}
               >
                 {msg.text}
               </div>
             </div>
           ))}
+
           {isLoading && (
             <div className="flex justify-start">
               <div className="bg-white text-gray-800 border border-gray-200 rounded-2xl rounded-tl-none px-5 py-4 shadow-sm max-w-[85%]">
@@ -143,11 +164,12 @@ const Chat: React.FC = () => {
               </div>
             </div>
           )}
+
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      {/* Input fijo */}
+      {/* Input */}
       <div className="bg-white border-t border-gray-200 p-4">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="flex gap-3">
@@ -157,16 +179,14 @@ const Chat: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Escribe lo que sientes…"
-              className="flex-1 border border-gray-300 rounded-full px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#141A45]/40 focus:border-transparent text-gray-800"
+              className="flex-1 border border-primary rounded-full px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#141A45]/40 focus:border-transparent text-gray-800"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
               className={`bg-[#141A45] text-white rounded-full w-12 h-12 flex items-center justify-center hover:bg-opacity-90 transition-all shadow-md ${
-                !input.trim() || isLoading
-                  ? "opacity-60 cursor-not-allowed"
-                  : ""
+                !input.trim() || isLoading ? "opacity-60 cursor-not-allowed" : ""
               }`}
               aria-label="Enviar mensaje"
             >

@@ -42,10 +42,11 @@ const Profile: React.FC = () => {
 
         {/* Información del usuario */}
         <div className="p-6 text-center mt-4">
-          <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-          <p className="text-gray-600 mt-2">{user.email}</p>
+          <h1 className="text-2xl font-bold text-gray-800">{user.data.name}</h1>
+          <p className="text-gray-600 mt-2">{user.data.email}</p>
         </div>
 
+        
       </div>
     </div>
   );
