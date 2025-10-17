@@ -4,7 +4,10 @@ import Register from "../modules/auth/Register";
 import Forum from "../modules/forum/Forum";
 import ProtectedRoute from "../modules/auth/ProtectedRoute";
 import Dashboard from "../modules/dashboard/Dashboard";
-import LandingPage from "../modules/landing/landing";
+import LandingPage from "../modules/landing/Landing";
+import Explorer from "../modules/Explorer/Explorer";
+import Chat from "../modules/chat/Chat";
+import Profile from "../modules/profile/Profile";
 
 export default function AppRoutes() {
   return (
@@ -12,8 +15,8 @@ export default function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/explorer" element={<Explorer/>} />
       
-
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<div className="p-6">Home privada</div>} />
       </Route>
@@ -23,8 +26,12 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
       </Route>
-      
-
+      <Route element={<ProtectedRoute />}>
+        <Route path="/chat" element={<Chat />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="/profile" element={<Profile />} />
+      </Route>
       <Route path="*" element={<div className="p-6">404</div>} />
     </Routes>
   );

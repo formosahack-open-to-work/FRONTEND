@@ -30,10 +30,8 @@ export default function Login() {
 
     try {
       await AuthService.login(form);
-      window.location.href = "/forum";
       // TODO: redirigir a Home o Profile
-      
-
+      window.location.href = "/forum";
     } catch (err) {
       if (isApiValidationError(err) && err.errors?.length) {
         const map: FieldErrorMap = {};

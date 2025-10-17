@@ -14,10 +14,8 @@ export interface LoginDTO {
 }
 
 export interface AuthResponse {
-  data: {
-    token: string;
-    user: IUser;
-  }
+  token: string;
+  user: IUser;
 }
 
 // Formato típico de express-validator + capa de errores propia

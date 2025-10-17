@@ -1,18 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext"; 
-import { CgProfile } from "react-icons/cg";
+import Logo from '../../assets/images/Logo.png';
 
 interface NavItem {
   name: string;
   href: string;
+  adminOnly?: boolean;
 }
 
-// Solo rutas que requieren autenticación
+// Definir todas las rutas privadas
 const privateNavItems: NavItem[] = [
   { name: "Inicio", href: "/" },
-  { name: "Foro", href: "/foro" },
-  { name: "Explorar", href: "/explorar" },
-  { name: "Dashboard", href: "/dashboard" },
+  { name: "Foro", href: "/forum" },
+  { name: "Consejos", href: "/explorer" },
+  { name: "SerenAI", href: "/chat" },
+  { name: "Dashboard", href: "/dashboard", adminOnly: true },
 ];
 
 export default function Header() {
@@ -72,14 +74,25 @@ export default function Header() {
     }
   };
 
+  // Filtrar nav items basado en el rol del usuario
+  const getNavItems = () => {
+    if (!user) return [];
+    
+    return privateNavItems.filter(item => {
+      // Si no es solo para admin, mostrar a todos los usuarios autenticados
+      if (!item.adminOnly) return true;
+      // Si es solo para admin, verificar si el usuario es admin
+      return user.role === 'admin'; // Ajusta según tu estructura de usuario
+    });
+  };
+
   // Solo mostrar nav items si hay usuario
-  const finalNavItems = user ? privateNavItems : [];
+  const finalNavItems = user ? getNavItems() : [];
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 py-2">
+    <header className="bg-white shadow-md sticky top-0 z-50 py-2 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          
           {/* LOGO */}
           <div className="flex-shrink-0">
             <a
@@ -87,7 +100,7 @@ export default function Header() {
               className="flex items-center space-x-2 hover:scale-[1.02] transition-transform"
             >
               <span className="text-2xl font-extrabold text-gray-900">
-                <span className="text-primary-600">Formo</span>Foro
+                <span className="text-primary-600">Serena</span>
               </span>
             </a>
           </div>
@@ -133,12 +146,34 @@ export default function Header() {
                   onMouseEnter={handleDropdownMouseEnter}
                   onMouseLeave={handleDropdownMouseLeave}
                 >
-                  <button 
+                  <div
                     onClick={handleDropdownClick}
-                    className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-200 transition"
+                    className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
                   >
-                    <CgProfile size={35} color="#141A45"/>
-                  </button>
+                    {/* AVATAR DEL USUARIO CORREGIDO */}
+                    <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-300">
+                      <img 
+                        src={ Logo} 
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback si la imagen no carga
+                          e.target.src = Logo;
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {user.name || 'Usuario'}
+                    </span>
+                    <svg 
+                      className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
 
                   {/* Dropdown con transición mejorada */}
                   <div 
@@ -148,8 +183,12 @@ export default function Header() {
                         : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
                     }`}
                   >
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
                     <a
-                      href="/perfil"
+                      href="/profile"
                       className="block px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 transition-colors duration-200"
                       onClick={() => setIsDropdownOpen(false)}
                     >
@@ -217,6 +256,7 @@ export default function Header() {
               key={item.name}
               href={item.href}
               className="block text-gray-700 hover:bg-indigo-50 hover:text-primary-700 px-3 py-2 rounded-md font-medium"
+              onClick={() => setIsOpen(false)}
             >
               {item.name}
             </a>
@@ -227,23 +267,39 @@ export default function Header() {
               <a
                 href="/login"
                 className="block text-white bg-primary-600 rounded-md px-3 py-2 text-center font-medium hover:bg-primary-700"
+                onClick={() => setIsOpen(false)}
               >
                 Iniciar Sesión
               </a>
               <a
                 href="/register"
                 className="block text-primary-600 border border-primary-600 rounded-md px-3 py-2 text-center font-medium hover:bg-indigo-50"
+                onClick={() => setIsOpen(false)}
               >
                 Registrarse
               </a>
             </>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md mt-2"
-            >
-              Cerrar Sesión 
-            </button>
+            <>
+              {/* Información del usuario en móvil */}
+              <div className="px-3 py-2 border-t border-gray-200 mt-2">
+                <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                <p className="text-xs text-gray-500">{user.email}</p>
+              </div>
+              <a
+                href="/p"
+                className="block text-gray-700 hover:bg-indigo-50 px-3 py-2 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                Mi Perfil
+              </a>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md"
+              >
+                Cerrar Sesión
+              </button>
+            </>
           )}
         </div>
       )}

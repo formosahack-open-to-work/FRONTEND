@@ -30,18 +30,20 @@ export const AuthService = {
   },
 
   async login(payload: LoginDTO): Promise<AuthResponse> {
-    
-    const response = await http.post<AuthResponse>(`/login`, payload);
-    const {data} = response
-    
-    saveToken(data.data.token);
-    return data;
+    const { data } = await http.post(`/login`, payload);
+    const flat = (data?.data ?? data) as AuthResponse; // aplana
+    console.log(data);
+    console.log(data.token);
+    console.log(flat.token);
+
+    if (!flat?.token) throw new Error("Token no recibido");
+    saveToken(flat.token);
+    return flat;
   },
 
   async profile(): Promise<IUser> {
     const { data } = await http.get<IUser>(`/profile`);
-    console.log(data);
-    return data;
+    return (data?.data ?? data) as IUser;
   },
 
   async logout(): Promise<void> {
