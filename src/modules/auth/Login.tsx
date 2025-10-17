@@ -14,7 +14,7 @@ type FieldErrorMap = Partial<Record<keyof LoginDTO, string>>;
 
 export default function Login() {
   const { user } = useAuth();
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/forum" replace />;
 
   const [form, setForm] = useState<LoginDTO>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function Login() {
     try {
       await AuthService.login(form);
       // TODO: redirigir a Home o Profile
-      window.location.href = "/dashboard";
+      window.location.href = "/forum";
     } catch (err) {
       if (isApiValidationError(err) && err.errors?.length) {
         const map: FieldErrorMap = {};

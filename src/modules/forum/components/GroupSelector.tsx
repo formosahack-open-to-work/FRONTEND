@@ -1,11 +1,11 @@
+import { SORTED_CONDITIONS } from "../../../data/conditions";
+
 interface GroupSelectorProps {
-  groups: string[];
   selectedGroup: string | null;
   onSelect: (group: string) => void;
 }
 
 export default function GroupSelector({
-  groups,
   selectedGroup,
   onSelect,
 }: GroupSelectorProps) {
@@ -15,7 +15,7 @@ export default function GroupSelector({
         Selecciona tu condición
       </h2>
       <div className="flex flex-wrap gap-2">
-        {groups.map((group) => (
+        {SORTED_CONDITIONS.map((group) => (
           <button
             key={group}
             onClick={() => onSelect(group)}
