@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext"; 
-import Logo from '../../assets/images/Logo.png';
+import { useAuth } from "../../context/AuthContext";
+import Logo from "../../assets/images/Logo.png";
 
 interface NavItem {
   name: string;
@@ -13,7 +13,6 @@ const privateNavItems: NavItem[] = [
   { name: "Foro", href: "/forum" },
   { name: "Consejos", href: "/explorer" },
   { name: "SerenAI", href: "/chat" },
-  { name: "Dashboard", href: "/dashboard", adminOnly: true },
 ];
 
 export default function Header() {
@@ -31,9 +30,9 @@ export default function Header() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -76,12 +75,12 @@ export default function Header() {
   // Filtrar nav items basado en el rol del usuario
   const getNavItems = () => {
     if (!user) return [];
-    
-    return privateNavItems.filter(item => {
+
+    return privateNavItems.filter((item) => {
       // Si no es solo para admin, mostrar a todos los usuarios autenticados
       if (!item.adminOnly) return true;
       // Si es solo para admin, verificar si el usuario es admin
-      return user.role === 'admin'; // Ajusta según tu estructura de usuario
+      return user.role === "admin"; // Ajusta según tu estructura de usuario
     });
   };
 
@@ -139,7 +138,7 @@ export default function Header() {
             ) : (
               <>
                 {/* PERFIL CON DROPDOWN MEJORADO */}
-                <div 
+                <div
                   className="relative"
                   ref={dropdownRef}
                   onMouseEnter={handleDropdownMouseEnter}
@@ -151,8 +150,8 @@ export default function Header() {
                   >
                     {/* AVATAR DEL USUARIO CORREGIDO */}
                     <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-300">
-                      <img 
-                        src={ Logo} 
+                      <img
+                        src={Logo}
                         alt="Avatar"
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -162,23 +161,41 @@ export default function Header() {
                       />
                     </div>
                     <span className="text-sm font-medium text-gray-700">
-                      {user.name || 'Usuario'}
+                      {user.data.name}
                     </span>
-                    <svg 
-                      className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                      fill="none" 
-                      stroke="currentColor" 
+                    <svg
+                      className={`w-4 h-4 text-gray-500 transition-transform ${
+                        isDropdownOpen ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
-                    <span className="text-sm font-medium text-gray-700 hidden lg:inline">
-                      {user.data.name || "Usuario"}
-                    </span>
-                  </button>
+                  </div>
 
-                  {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto">
+                  {/* Dropdown con transición mejorada */}
+                  <div
+                    className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 transform ${
+                      isDropdownOpen
+                        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                    }`}
+                  >
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {user.data.name}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {user.data.email}
+                      </p>
+                    </div>
                     <a
                       href="/profile"
                       className="block px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 transition-colors duration-200"
@@ -272,12 +289,28 @@ export default function Header() {
               </a>
             </>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md mt-2"
-            >
-              Cerrar Sesión ({user.data.name || "Usuario"})
-            </button>
+            <>
+              {/* Información del usuario en móvil */}
+              <div className="px-3 py-2 border-t border-gray-200 mt-2">
+                <p className="text-sm font-medium text-gray-900">
+                  {user.data.name}
+                </p>
+                <p className="text-xs text-gray-500">{user.data.email}</p>
+              </div>
+              <a
+                href="/p"
+                className="block text-gray-700 hover:bg-indigo-50 px-3 py-2 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                Mi Perfil
+              </a>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md"
+              >
+                Cerrar Sesión
+              </button>
+            </>
           )}
         </div>
       )}
