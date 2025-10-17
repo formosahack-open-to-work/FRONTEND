@@ -1,10 +1,11 @@
 import type { IUser } from "./user";
+import type { ChronicCondition } from "../data/conditions";
 
 export interface RegisterDTO {
   name: string;
   username: string;
   email: string;
-  condition: string;
+  condition: ChronicCondition;
   password: string;
 }
 

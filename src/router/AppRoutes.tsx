@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "../modules/auth/Login";
 import Register from "../modules/auth/Register";
 import Forum from "../modules/forum/Forum";
-import ProtectedRoute from "../modules/auth/ProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../modules/dashboard/Dashboard";
 import LandingPage from "../modules/landing/Landing";
 import Explorer from "../modules/Explorer/Explorer";
@@ -17,9 +17,6 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/explorer" element={<Explorer/>} />
       
-      <Route element={<ProtectedRoute />}>
-        <Route path="/home" element={<div className="p-6">Home privada</div>} />
-      </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/forum" element={<Forum />} />
       </Route>

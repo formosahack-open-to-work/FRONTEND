@@ -1,4 +1,5 @@
 import type React from "react";
+import { SORTED_CONDITIONS } from "../../data/conditions";
 
 import { useState } from "react";
 import {
@@ -8,9 +9,11 @@ import {
 import type { RegisterDTO } from "../../types/auth";
 
 type FieldErrorMap = Partial<Record<keyof RegisterDTO, string>>;
-
+type RegisterFormState = Omit<RegisterDTO, "condition"> & {
+  condition: string; // permite cualquier string temporalmente
+};
 export default function Register() {
-  const [form, setForm] = useState<RegisterDTO>({
+  const [form, setForm] = useState<RegisterFormState>({
     name: "",
     username: "",
     email: "",
@@ -21,7 +24,9 @@ export default function Register() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrorMap>({});
   const [globalError, setGlobalError] = useState<string>("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
     setFieldErrors((p) => ({ ...p, [e.target.name]: "" }));
     setGlobalError("");
@@ -36,7 +41,7 @@ export default function Register() {
     try {
       console.log(form);
 
-      await AuthService.register(form);
+      await AuthService.register(form as RegisterDTO);
 
       // TODO: redirigir a Home o Profile
       window.location.href = "/";
@@ -132,15 +137,20 @@ export default function Register() {
             <label className="block mb-2 text-sm font-semibold text-gray-700">
               Condición o padecimiento
             </label>
-            <input
+            <select
               name="condition"
-              type="text"
               required
               value={form.condition}
               onChange={handleChange}
-              placeholder="Ej: Diabetes tipo 2, Hipertensión, etc."
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+            >
+              <option value="">Selecciona una condición</option>
+              {SORTED_CONDITIONS.map((cond) => (
+                <option key={cond} value={cond}>
+                  {cond}
+                </option>
+              ))}
+            </select>
             {fieldErrors.condition && (
               <p className="mt-1.5 text-xs text-red-600 font-medium">
                 {fieldErrors.condition}

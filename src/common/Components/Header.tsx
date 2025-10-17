@@ -10,7 +10,6 @@ interface NavItem {
 
 // Definir todas las rutas privadas
 const privateNavItems: NavItem[] = [
-  { name: "Inicio", href: "/" },
   { name: "Foro", href: "/forum" },
   { name: "Consejos", href: "/explorer" },
   { name: "SerenAI", href: "/chat" },

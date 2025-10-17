@@ -1,6 +1,7 @@
 export type Role = "admin" | "user";
 
 export interface IUser {
+  name: ReactNode;
   email: ReactNode;
   condition: ReactNode;
   

@@ -22,9 +22,17 @@ const Chat: React.FC = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true); // ✅ bandera para evitar scroll inicial
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      // En el primer render, no hace scroll
+      isFirstRender.current = false;
+      return;
+    }
+    // Luego sí, cuando hay nuevos mensajes
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -61,7 +69,6 @@ const Chat: React.FC = () => {
 
       console.log(response);
       
-      // Ajuste para la estructura de respuesta de tu backend
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: data.success ? data.data : data.message || "Lo siento, no pude procesar tu mensaje.",
@@ -104,7 +111,7 @@ const Chat: React.FC = () => {
         </div>
       </div>
 
-      {/* Área de chat más compacta */}
+      {/* Área de chat */}
       <div className="flex-1 overflow-y-auto p-5 bg-gray-50">
         <div className="max-w-3xl mx-auto space-y-5">
           {messages.map((msg) => (
@@ -140,7 +147,7 @@ const Chat: React.FC = () => {
         </div>
       </div>
 
-      {/* Input fijo en la parte inferior */}
+      {/* Input fijo */}
       <div className="bg-white border-t border-gray-200 p-4">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="flex gap-3">
