@@ -1,0 +1,92 @@
+{
+  "name": "Chatbot de Contención con Gemini",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "path": "webhook-chatbot",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "webhookId": "b1f2b3c4-d5e6-f7g8-h9i0-j1k2l3m4n5o6"
+    },
+    {
+      "parameters": {
+        "model": "gemini-pro",
+        "prompt": "Eres un asistente virtual de contención emocional para pacientes con enfermedades crónicas. Tu nombre es 'Serenamente'. Tu objetivo es escuchar, ofrecer palabras de aliento y proporcionar un espacio seguro. No debes dar consejos médicos. Responde de manera cálida, empática y breve. \n\nHistorial de la conversación anterior (si lo hay):\n{{$json.conversationHistory}}\n\nMensaje del usuario:\n{{$json.body.message}}"
+      },
+      "name": "Llamada a Gemini API",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        850,
+        300
+      ],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "YOUR_GEMINI_API_CREDENTIAL_ID",
+          "name": "Google Gemini API credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const newHistory = ($json.conversationHistory || '') + `Usuario: ${$json.body.message}\\nAsistente: ${$json.response}\\n`;\nreturn { conversationHistory: newHistory };"
+      },
+      "name": "Actualizar Historial",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Webhook",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Historial",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Actualizar Historial": {
+      "main": [
+        [
+          {
+            "node": "Llamada a Gemini API",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  }
+}

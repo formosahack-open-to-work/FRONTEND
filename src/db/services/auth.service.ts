@@ -19,13 +19,13 @@ export function isApiValidationError(e: unknown): e is ApiErrorPayload {
 export const AuthService = {
   async register(payload: RegisterDTO): Promise<AuthResponse> {
     const { data } = await http.post<AuthResponse>(`/register`, payload);
-    saveToken(data.token);
+    saveToken(data.data.token);
     return data;
   },
 
   async firstUser(payload: RegisterDTO): Promise<AuthResponse> {
     const { data } = await http.post<AuthResponse>(`/first-user`, payload);
-    saveToken(data.token);
+    saveToken(data.data.token);
     return data;
   },
 

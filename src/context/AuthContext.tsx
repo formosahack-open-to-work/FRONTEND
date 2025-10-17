@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fn(payload);
       setUser(res.user);
       // si el back no devuelve user completo, refresca
-      if (res.user && !res.user?.data._id) {
+      if (!res.user?.data._id) {
         const profile = await AuthService.profile();
         setUser(profile);
       }

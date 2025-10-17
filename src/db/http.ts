@@ -10,6 +10,7 @@ export const http = axios.create({
 // Agregar Authorization si hay token guardado
 http.interceptors.request.use((config) => {
   const token = getToken();
+  console.log(token);
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
