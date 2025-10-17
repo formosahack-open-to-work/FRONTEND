@@ -7,10 +7,15 @@ import {
   isApiValidationError,
 } from "../../db/services/auth.service";
 import type { LoginDTO } from "../../types/auth";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 type FieldErrorMap = Partial<Record<keyof LoginDTO, string>>;
 
 export default function Login() {
+  const { user } = useAuth();
+  if (user) return <Navigate to="/dashboard" replace />;
+
   const [form, setForm] = useState<LoginDTO>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrorMap>({});

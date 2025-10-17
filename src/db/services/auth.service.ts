@@ -43,7 +43,10 @@ export const AuthService = {
 
   async profile(): Promise<IUser> {
     const { data } = await http.get<IUser>(`/profile`);
-    return (data?.data ?? data) as IUser;
+    if (data && typeof data === "object" && data !== null) {
+      return data as IUser;
+    }
+    throw new Error("Unexpected data format");
   },
 
   async logout(): Promise<void> {
