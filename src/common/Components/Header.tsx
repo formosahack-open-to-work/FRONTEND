@@ -98,7 +98,7 @@ export default function Header() {
                       />
                     </svg>
                     <span className="text-sm font-medium text-gray-700 hidden lg:inline">
-                      {user.name || "Usuario"}
+                      {user.data.name || "Usuario"}
                     </span>
                   </button>
 
@@ -196,7 +196,7 @@ export default function Header() {
               onClick={handleLogout}
               className="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md mt-2"
             >
-              Cerrar Sesión ({user.name || "Usuario"})
+              Cerrar Sesión ({user.data.name || "Usuario"})
             </button>
           )}
         </div>

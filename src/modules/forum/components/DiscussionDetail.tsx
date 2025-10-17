@@ -14,7 +14,7 @@ interface DiscussionDetailProps {
 
 export default function DiscussionDetail({
   discussion,
-  onBack,
+  //onBack,
   onCommentAdded,
 }: DiscussionDetailProps) {
   const { user } = useAuth();
@@ -51,12 +51,12 @@ export default function DiscussionDetail({
 
   return (
     <div className="bg-white rounded-lg border p-4">
-      <button
+      {/* <button
         onClick={onBack}
         className="text-indigo-600 hover:underline mb-4 flex items-center"
       >
         ← Volver a las discusiones
-      </button>
+      </button> */}
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-800">{discussion.title}</h2>
